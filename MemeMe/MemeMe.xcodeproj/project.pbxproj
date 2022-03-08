@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3C67FBC127D7215600A45450 /* Meme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C67FBC027D7215600A45450 /* Meme.swift */; };
+		3C67FBC427D7315E00A45450 /* ActivityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C67FBC327D7315E00A45450 /* ActivityViewController.swift */; };
 		3C8C2A1127C19FC500E77713 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8C2A1027C19FC500E77713 /* AppDelegate.swift */; };
 		3C8C2A1327C19FC500E77713 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8C2A1227C19FC500E77713 /* SceneDelegate.swift */; };
 		3C8C2A1527C19FC500E77713 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8C2A1427C19FC500E77713 /* ViewController.swift */; };
@@ -16,6 +18,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3C67FBC027D7215600A45450 /* Meme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meme.swift; sourceTree = "<group>"; };
+		3C67FBC327D7315E00A45450 /* ActivityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityViewController.swift; sourceTree = "<group>"; };
 		3C8C2A0D27C19FC500E77713 /* MemeMe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MemeMe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C8C2A1027C19FC500E77713 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3C8C2A1227C19FC500E77713 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -37,6 +41,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3C67FBBF27D7210F00A45450 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				3C67FBC027D7215600A45450 /* Meme.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		3C67FBC227D7311300A45450 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				3C8C2A1627C19FC500E77713 /* Main.storyboard */,
+				3C8C2A1427C19FC500E77713 /* ViewController.swift */,
+				3C67FBC327D7315E00A45450 /* ActivityViewController.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		3C8C2A0427C19FC500E77713 = {
 			isa = PBXGroup;
 			children = (
@@ -56,10 +78,10 @@
 		3C8C2A0F27C19FC500E77713 /* MemeMe */ = {
 			isa = PBXGroup;
 			children = (
+				3C67FBC227D7311300A45450 /* View */,
+				3C67FBBF27D7210F00A45450 /* Model */,
 				3C8C2A1027C19FC500E77713 /* AppDelegate.swift */,
 				3C8C2A1227C19FC500E77713 /* SceneDelegate.swift */,
-				3C8C2A1427C19FC500E77713 /* ViewController.swift */,
-				3C8C2A1627C19FC500E77713 /* Main.storyboard */,
 				3C8C2A1927C19FC600E77713 /* Assets.xcassets */,
 				3C8C2A1B27C19FC600E77713 /* LaunchScreen.storyboard */,
 				3C8C2A1E27C19FC600E77713 /* Info.plist */,
@@ -139,7 +161,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				3C8C2A1527C19FC500E77713 /* ViewController.swift in Sources */,
+				3C67FBC127D7215600A45450 /* Meme.swift in Sources */,
 				3C8C2A1127C19FC500E77713 /* AppDelegate.swift in Sources */,
+				3C67FBC427D7315E00A45450 /* ActivityViewController.swift in Sources */,
 				3C8C2A1327C19FC500E77713 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -292,6 +316,8 @@
 				DEVELOPMENT_TEAM = 75LKVZ82HJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MemeMe/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "$(PRODUCT_NAME) wants to access your camera to display the image.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "$(PRODUCT_NAME) wants to access your photo library to display the image.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -302,7 +328,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Udacity.MemeMe;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Ashley.Thornton.Udacity.MemeMe;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -320,6 +346,8 @@
 				DEVELOPMENT_TEAM = 75LKVZ82HJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MemeMe/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "$(PRODUCT_NAME) wants to access your camera to display the image.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "$(PRODUCT_NAME) wants to access your photo library to display the image.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -330,7 +358,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Udacity.MemeMe;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Ashley.Thornton.Udacity.MemeMe;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

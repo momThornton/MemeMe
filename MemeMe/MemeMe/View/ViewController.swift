@@ -14,15 +14,21 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     @IBOutlet weak var cameraButton: UIBarButtonItem!
     @IBOutlet weak var topTextField: UITextField!
     @IBOutlet weak var bottomTextField: UITextField!
+    @IBOutlet weak var UItoolbar: UIToolbar!
+    
+    var meme: Meme?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         let memeTextAttributes: [NSAttributedString.Key: Any] = [
-            .strokeColor: UIColor.black,
-            .foregroundColor: UIColor.white,
+            .strokeColor: UIColor.label, // example says to use black, but this wont appear if device is in dark-mode
+            .foregroundColor: UIColor.systemBackground, // example says to use white, but this wont appear if device is in dark-mode
             .font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
             .strokeWidth: 3.0
         ]
+        self.navigationItem.title = "test"
+        
         topTextField.text = "TOP"
         topTextField.defaultTextAttributes = memeTextAttributes
         topTextField.delegate = self
@@ -52,8 +58,51 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
 
     override func viewWillAppear(_ animated: Bool) {
 //        cameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
+        super.viewWillAppear(animated)
+        subscribeToKeyboardNotifications()
+        
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        unsubscribeFromKeyboardNotifications()
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        self.save()
+        guard let activityVC = segue.destination as? ActivityViewController else{return}
+        activityVC.meme = self.meme
+    }
+    
+    func subscribeToKeyboardNotifications() {
+
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    func unsubscribeFromKeyboardNotifications() {
+
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    @objc func keyboardWillShow(_ notification:Notification) {
+
+        view.frame.origin.y -= getKeyboardHeight(notification)
+    }
+    
+    @objc func keyboardWillHide(_ notification:Notification) {
+        
+        view.frame.origin.y += getKeyboardHeight(notification)
+    }
+    
+    func getKeyboardHeight(_ notification:Notification) -> CGFloat {
+
+        let userInfo = notification.userInfo
+        let keyboardSize = userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! NSValue // of CGRect
+        return keyboardSize.cgRectValue.height
+    }
+ 
     // MARK: - UIImagePickerControllerDelegate
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
@@ -66,6 +115,29 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
     
+    }
+    
+    func save() {
+        let memedImage = generateMemedImage()
+        self.meme = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: selectImageView.image!, memedImage: memedImage)
+    }
+    
+    func generateMemedImage() -> UIImage {
+        
+        self.UItoolbar.isHidden = true
+        self.navigationController?.navigationBar.isHidden = true
+        
+        
+        UIGraphicsBeginImageContext(self.view.frame.size)
+        view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
+        let memedImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+
+        self.UItoolbar.isHidden = false
+//        self.UItoolbar.isHidden.toggle()
+        self.navigationController?.navigationBar.isHidden = false
+
+        return memedImage
     }
     
     // MARK: - UITextFieldDelegate
@@ -86,7 +158,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         present(imagePicker, animated: true, completion: nil)
         
     }
-    
     @IBAction func selectImageFromCamera(_ sender: Any) {
         checkCameraAuthorization { isAuthorized in
             if isAuthorized {
@@ -97,7 +168,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             }
         }
     }
-    
     func checkCameraAuthorization(thenPerform completion: @escaping (Bool) -> Void) {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
@@ -116,8 +186,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             fatalError()
         }
     
-        
     }
-    
 }
 
