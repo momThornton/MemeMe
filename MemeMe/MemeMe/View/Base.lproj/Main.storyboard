@@ -18,15 +18,20 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cwu-J3-c9f" userLabel="Top Text Field">
-                                <rect key="frame" x="87" y="24" width="240" height="34"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="allCharacters"/>
-                            </textField>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="ybj-pJ-M7V">
                                 <rect key="frame" x="8" y="5" width="398" height="679.5"/>
                                 <imageReference key="image" image="paperplane.fill" catalog="system" symbolScale="large"/>
                             </imageView>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Top" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cwu-J3-c9f" userLabel="Top Text Field">
+                                <rect key="frame" x="87" y="24" width="240" height="18.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="allCharacters" returnKeyType="done"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Bottom" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="x32-5g-bfW" userLabel="Bottom Text Field">
+                                <rect key="frame" x="87" y="630.5" width="240" height="18.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="allCharacters" returnKeyType="done"/>
+                            </textField>
                             <toolbar hidden="YES" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" verticalHuggingPriority="252" translatesAutoresizingMaskIntoConstraints="NO" id="Q59-tc-KK8">
                                 <rect key="frame" x="0.0" y="673" width="414" height="44"/>
                                 <items>
@@ -43,11 +48,6 @@
                                     </barButtonItem>
                                 </items>
                             </toolbar>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="x32-5g-bfW" userLabel="Bottom Text Field">
-                                <rect key="frame" x="87" y="615" width="240" height="34"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="allCharacters"/>
-                            </textField>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -109,17 +109,15 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dkC-bb-2w7">
-                                <rect key="frame" x="8" y="256.5" width="398" height="212"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" secondItem="dkC-bb-2w7" secondAttribute="height" multiplier="15:8" id="8hx-SH-vK8"/>
-                                </constraints>
+                                <rect key="frame" x="8" y="8" width="398" height="709"/>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="nRR-KZ-tDH"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="nRR-KZ-tDH" firstAttribute="trailing" secondItem="dkC-bb-2w7" secondAttribute="trailing" constant="8" id="AW3-UF-pV5"/>
-                            <constraint firstItem="dkC-bb-2w7" firstAttribute="centerY" secondItem="nRR-KZ-tDH" secondAttribute="centerY" id="Hbn-UK-h6X"/>
+                            <constraint firstItem="nRR-KZ-tDH" firstAttribute="bottom" secondItem="dkC-bb-2w7" secondAttribute="bottom" constant="8" id="ZFi-hd-hRi"/>
+                            <constraint firstItem="dkC-bb-2w7" firstAttribute="top" secondItem="nRR-KZ-tDH" secondAttribute="top" constant="8" id="ruh-OK-yCT"/>
                             <constraint firstItem="dkC-bb-2w7" firstAttribute="leading" secondItem="nRR-KZ-tDH" secondAttribute="leading" constant="8" id="zUN-rF-8Av"/>
                         </constraints>
                     </view>

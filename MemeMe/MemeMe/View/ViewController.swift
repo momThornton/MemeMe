@@ -20,44 +20,11 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     private var isEditingBottomTextField = false
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        let memeTextAttributes: [NSAttributedString.Key: Any] = [
-            .strokeColor: UIColor.label, // example says to use black, but this wont appear if device is in dark-mode
-            .foregroundColor: UIColor.systemBackground, // example says to use white, but this wont appear if device is in dark-mode
-            .font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
-            .strokeWidth: 3.0
-        ]
-        self.navigationItem.title = "test"
-        
-        topTextField.text = "TOP"
-        topTextField.defaultTextAttributes = memeTextAttributes
-        topTextField.delegate = self
-        topTextField.clearsOnBeginEditing = true
-        topTextField.textAlignment = .center
-        
-        bottomTextField.text = "BOTTOM"
-        bottomTextField.defaultTextAttributes = memeTextAttributes
-        bottomTextField.delegate = self
-        bottomTextField.clearsOnBeginEditing = true
-        bottomTextField.textAlignment = .center
-        
-//        [topTextField, bottomTextField].forEach { tf in
-//            guard let tf = tf else { return }
-//            tf.textAlignment = .center
-//            tf.defaultTextAttributes = memeTextAttributes
-//            tf.delegate = self
-//        }
-//
-//        for tf in [topTextField, bottomTextField] {
-//            guard let tf = tf else { break }
-//            tf.textAlignment = .center
-//            tf.defaultTextAttributes = memeTextAttributes
-//            tf.delegate = self
-//        }
+        self.configureTextFields()
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
 //        cameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
         super.viewWillAppear(animated)
@@ -201,6 +168,29 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             fatalError()
         }
     
+    }
+    
+    // MARK: - Internal
+    
+    private func configureTextFields() {
+        let memeTextAttributes: [NSAttributedString.Key: Any] = [
+            .strokeColor: UIColor.black,
+            .foregroundColor: UIColor.white,
+            .font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
+            .strokeWidth: -3.0
+        ]
+        
+        topTextField.text = "TOP"
+        topTextField.defaultTextAttributes = memeTextAttributes
+        topTextField.delegate = self
+        topTextField.clearsOnBeginEditing = true
+        topTextField.textAlignment = .center
+        
+        bottomTextField.text = "BOTTOM"
+        bottomTextField.defaultTextAttributes = memeTextAttributes
+        bottomTextField.delegate = self
+        bottomTextField.clearsOnBeginEditing = true
+        bottomTextField.textAlignment = .center
     }
     
 }
