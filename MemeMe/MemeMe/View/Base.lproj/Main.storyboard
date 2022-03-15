@@ -24,11 +24,11 @@
                                 <textInputTraits key="textInputTraits" autocapitalizationType="allCharacters"/>
                             </textField>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="ybj-pJ-M7V">
-                                <rect key="frame" x="8" y="5" width="398" height="731.5"/>
+                                <rect key="frame" x="8" y="5" width="398" height="679.5"/>
                                 <imageReference key="image" image="paperplane.fill" catalog="system" symbolScale="large"/>
                             </imageView>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" verticalHuggingPriority="252" translatesAutoresizingMaskIntoConstraints="NO" id="Q59-tc-KK8">
-                                <rect key="frame" x="0.0" y="725" width="414" height="49"/>
+                            <toolbar hidden="YES" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" verticalHuggingPriority="252" translatesAutoresizingMaskIntoConstraints="NO" id="Q59-tc-KK8">
+                                <rect key="frame" x="0.0" y="673" width="414" height="44"/>
                                 <items>
                                     <barButtonItem title="Select Image" id="9JG-uq-jFv">
                                         <connections>
@@ -44,7 +44,7 @@
                                 </items>
                             </toolbar>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="x32-5g-bfW" userLabel="Bottom Text Field">
-                                <rect key="frame" x="87" y="667" width="240" height="34"/>
+                                <rect key="frame" x="87" y="615" width="240" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="allCharacters"/>
                             </textField>
@@ -62,11 +62,24 @@
                             <constraint firstItem="cwu-J3-c9f" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="24" id="dTh-Z3-VM8"/>
                             <constraint firstItem="Q59-tc-KK8" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="di2-zd-kuF"/>
                             <constraint firstItem="x32-5g-bfW" firstAttribute="centerX" secondItem="ybj-pJ-M7V" secondAttribute="centerX" id="i8N-Wd-FFh"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Q59-tc-KK8" secondAttribute="bottom" id="kss-Sg-BtT"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Q59-tc-KK8" secondAttribute="bottom" constant="8" id="kss-Sg-BtT"/>
                             <constraint firstItem="Q59-tc-KK8" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="nwc-oA-01E"/>
                             <constraint firstItem="cwu-J3-c9f" firstAttribute="centerX" secondItem="ybj-pJ-M7V" secondAttribute="centerX" id="x3q-pe-Pkv"/>
                         </constraints>
                     </view>
+                    <toolbarItems>
+                        <barButtonItem title="Item" image="photo" catalog="system" id="8B5-ZE-yUf">
+                            <connections>
+                                <action selector="selectImageFromAlbum:" destination="BYZ-38-t0r" id="xPq-Vd-dBO"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="KE0-Wk-6xl"/>
+                        <barButtonItem systemItem="camera" id="Tpa-h2-5BI">
+                            <connections>
+                                <action selector="selectImageFromCamera:" destination="BYZ-38-t0r" id="qZk-Cl-0C0"/>
+                            </connections>
+                        </barButtonItem>
+                    </toolbarItems>
                     <navigationItem key="navigationItem" id="iJb-wv-sEt">
                         <barButtonItem key="leftBarButtonItem" title="Share" image="square.and.arrow.up" catalog="system" id="bQO-zD-q45">
                             <connections>
@@ -74,6 +87,7 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="UItoolbar" destination="Q59-tc-KK8" id="aJL-Vx-WhP"/>
                         <outlet property="bottomTextField" destination="x32-5g-bfW" id="4dY-8h-9kz"/>
@@ -95,7 +109,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dkC-bb-2w7">
-                                <rect key="frame" x="8" y="281" width="398" height="212"/>
+                                <rect key="frame" x="8" y="256.5" width="398" height="212"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="dkC-bb-2w7" secondAttribute="height" multiplier="15:8" id="8hx-SH-vK8"/>
                                 </constraints>
@@ -121,7 +135,7 @@
         <!--Navigation Controller-->
         <scene sceneID="4F5-tM-8SX">
             <objects>
-                <navigationController id="i6c-9e-4dr" sceneMemberID="viewController">
+                <navigationController toolbarHidden="NO" id="i6c-9e-4dr" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="Cvt-dJ-RYN">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -132,6 +146,10 @@
                             <color key="textColor" name="AccentColor"/>
                         </textAttributes>
                     </navigationBar>
+                    <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Og5-3Q-vsm">
+                        <rect key="frame" x="0.0" y="813" width="414" height="49"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </toolbar>
                     <connections>
                         <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="MSC-Qc-575"/>
                     </connections>
@@ -143,6 +161,7 @@
     </scenes>
     <resources>
         <image name="paperplane.fill" catalog="system" width="128" height="118"/>
+        <image name="photo" catalog="system" width="128" height="93"/>
         <image name="square.and.arrow.up" catalog="system" width="115" height="128"/>
         <namedColor name="AccentColor">
             <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

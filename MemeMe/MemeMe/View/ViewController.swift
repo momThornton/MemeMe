@@ -18,6 +18,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     var meme: Meme?
     
+    private var isEditingBottomTextField = false
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,13 +89,16 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
 
     @objc func keyboardWillShow(_ notification:Notification) {
-
-        view.frame.origin.y -= getKeyboardHeight(notification)
+        if isEditingBottomTextField {
+            view.frame.origin.y -= getKeyboardHeight(notification)
+        }
+        
     }
     
     @objc func keyboardWillHide(_ notification:Notification) {
-        
-        view.frame.origin.y += getKeyboardHeight(notification)
+        if isEditingBottomTextField {
+            view.frame.origin.y += getKeyboardHeight(notification)
+        }
     }
     
     func getKeyboardHeight(_ notification:Notification) -> CGFloat {
@@ -142,14 +147,22 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     // MARK: - UITextFieldDelegate
     
-//    func textFieldDidBeginEditing(_ textField: UITextField) {
-//        textField.text = nil
-//    }
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        self.isEditingBottomTextField = textField == self.bottomTextField
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if textField == self.bottomTextField {
+            self.isEditingBottomTextField = false
+        }
+    }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
     }
+    
+    
     
     @IBAction func selectImageFromAlbum(_ sender: Any) {
         let imagePicker = UIImagePickerController()
@@ -158,6 +171,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         present(imagePicker, animated: true, completion: nil)
         
     }
+    
     @IBAction func selectImageFromCamera(_ sender: Any) {
         checkCameraAuthorization { isAuthorized in
             if isAuthorized {
@@ -168,6 +182,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             }
         }
     }
+    
     func checkCameraAuthorization(thenPerform completion: @escaping (Bool) -> Void) {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
@@ -187,5 +202,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         }
     
     }
+    
 }
 
