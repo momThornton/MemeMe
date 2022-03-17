@@ -8,28 +8,28 @@
 import UIKit
 import AVFoundation
 
-class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate {
+class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextFieldDelegate, UINavigationControllerDelegate {
 
     @IBOutlet weak var selectImageView: UIImageView!
     @IBOutlet weak var cameraButton: UIBarButtonItem!
     @IBOutlet weak var topTextField: UITextField!
     @IBOutlet weak var bottomTextField: UITextField!
-    @IBOutlet weak var UItoolbar: UIToolbar!
-    
-    var meme: Meme?
     
     private var isEditingBottomTextField = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.configureTextFields()
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didClickActionButton))
     }
     
     override func viewWillAppear(_ animated: Bool) {
-//        cameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
         super.viewWillAppear(animated)
+        if !UIImagePickerController.isSourceTypeAvailable(.camera) {
+            cameraButton.isEnabled = false
+            cameraButton.tintColor = .systemGray
+        }
         subscribeToKeyboardNotifications()
-        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -37,10 +37,32 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         unsubscribeFromKeyboardNotifications()
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        self.save()
-        guard let activityVC = segue.destination as? ActivityViewController else{return}
-        activityVC.meme = self.meme
+    @IBAction func selectImageFromAlbum(_ sender: Any) {
+        self.chooseImageFromCameraOrPhoto(source: .photoLibrary)
+        
+    }
+    
+    @IBAction func selectImageFromCamera(_ sender: Any) {
+        guard cameraButton.isEnabled else {
+            print("selectImageFromCamera: camera is not available")
+            return
+        }
+        checkCameraAuthorization { isAuthorized in
+            if isAuthorized {
+                self.chooseImageFromCameraOrPhoto(source: .camera)
+            }
+        }
+    }
+    
+    @objc func didClickActionButton() {
+        let activityVC = UIActivityViewController(activityItems: [generateMemedImage()], applicationActivities: nil)
+        activityVC.completionWithItemsHandler = { activity, didComplete, items, error in
+            if didComplete {
+                self.save()
+                self.dismiss(animated: true)
+            }
+        }
+        present(activityVC, animated: true)
     }
     
     func subscribeToKeyboardNotifications() {
@@ -89,29 +111,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     }
     
-    func save() {
-        let memedImage = generateMemedImage()
-        self.meme = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: selectImageView.image!, memedImage: memedImage)
-    }
-    
-    func generateMemedImage() -> UIImage {
-        
-        self.UItoolbar.isHidden = true
-        self.navigationController?.navigationBar.isHidden = true
-        
-        
-        UIGraphicsBeginImageContext(self.view.frame.size)
-        view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
-        let memedImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
-        UIGraphicsEndImageContext()
-
-        self.UItoolbar.isHidden = false
-//        self.UItoolbar.isHidden.toggle()
-        self.navigationController?.navigationBar.isHidden = false
-
-        return memedImage
-    }
-    
     // MARK: - UITextFieldDelegate
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -129,28 +128,9 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         return true
     }
     
+    // MARK: - Internal
     
-    
-    @IBAction func selectImageFromAlbum(_ sender: Any) {
-        let imagePicker = UIImagePickerController()
-        imagePicker.delegate = self
-        imagePicker.sourceType = .photoLibrary
-        present(imagePicker, animated: true, completion: nil)
-        
-    }
-    
-    @IBAction func selectImageFromCamera(_ sender: Any) {
-        checkCameraAuthorization { isAuthorized in
-            if isAuthorized {
-                let imagePicker = UIImagePickerController()
-                imagePicker.delegate = self
-                imagePicker.sourceType = .camera
-                self.present (imagePicker, animated: true, completion: nil)
-            }
-        }
-    }
-    
-    func checkCameraAuthorization(thenPerform completion: @escaping (Bool) -> Void) {
+    private func checkCameraAuthorization(thenPerform completion: @escaping (Bool) -> Void) {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
             print("Capture access already granted")
@@ -169,8 +149,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         }
     
     }
-    
-    // MARK: - Internal
     
     private func configureTextFields() {
         let memeTextAttributes: [NSAttributedString.Key: Any] = [
@@ -191,6 +169,37 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         bottomTextField.delegate = self
         bottomTextField.clearsOnBeginEditing = true
         bottomTextField.textAlignment = .center
+    }
+    
+    private func hideNavigationBar(hide isHidden: Bool) {
+        self.navigationController?.navigationBar.isHidden = isHidden
+        self.navigationController?.toolbar.isHidden = isHidden
+    }
+    
+    private func save() {
+        let memedImage = generateMemedImage()
+        _ = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: selectImageView.image!, memedImage: memedImage)
+    }
+    
+    private func generateMemedImage() -> UIImage {
+        self.hideNavigationBar(hide: true)
+        
+        UIGraphicsBeginImageContext(self.view.frame.size)
+        view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
+        let memedImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+
+        self.hideNavigationBar(hide: false)
+        return memedImage
+    }
+    
+    private func chooseImageFromCameraOrPhoto(source: UIImagePickerController.SourceType) {
+        let pickerController = UIImagePickerController()
+        // This requires self to adopt UINavigationControllerDelegate
+        pickerController.delegate = self
+        pickerController.allowsEditing = true
+        pickerController.sourceType = source
+        present(pickerController, animated: true, completion: nil)
     }
     
 }
