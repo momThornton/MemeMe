@@ -19,7 +19,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextF
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.configureTextFields()
+        self.configure(topTextField, withLabel: "TOP")
+        self.configure(bottomTextField, withLabel: "BOTTOM")
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didClickActionButton))
     }
     
@@ -86,7 +87,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextF
     
     @objc func keyboardWillHide(_ notification:Notification) {
         if isEditingBottomTextField {
-            view.frame.origin.y += getKeyboardHeight(notification)
+            view.frame.origin.y = 0
         }
     }
     
@@ -150,25 +151,17 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextF
     
     }
     
-    private func configureTextFields() {
-        let memeTextAttributes: [NSAttributedString.Key: Any] = [
-            .strokeColor: UIColor.black,
+    private func configure(_ tf: UITextField, withLabel text: String) {
+        tf.defaultTextAttributes = [
             .foregroundColor: UIColor.white,
+            .strokeColor: UIColor.black,
             .font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
-            .strokeWidth: -3.0
+            .strokeWidth: -4.0,
         ]
-        
-        topTextField.text = "TOP"
-        topTextField.defaultTextAttributes = memeTextAttributes
-        topTextField.delegate = self
-        topTextField.clearsOnBeginEditing = true
-        topTextField.textAlignment = .center
-        
-        bottomTextField.text = "BOTTOM"
-        bottomTextField.defaultTextAttributes = memeTextAttributes
-        bottomTextField.delegate = self
-        bottomTextField.clearsOnBeginEditing = true
-        bottomTextField.textAlignment = .center
+        tf.textAlignment = .center
+        tf.text = text
+        tf.clearsOnBeginEditing = true
+        tf.delegate = self
     }
     
     private func hideNavigationBar(hide isHidden: Bool) {
