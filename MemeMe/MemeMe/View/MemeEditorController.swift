@@ -170,8 +170,11 @@ class MemeEditorController: UIViewController, UIImagePickerControllerDelegate, U
     }
     
     private func save() {
+        guard let image = imageView.image else { return }
         let memedImage = generateMemedImage()
-        _ = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imageView.image!, memedImage: memedImage)
+        let text = (top: topTextField.text ?? .empty, bottom: bottomTextField.text ?? .empty)
+        let meme = Meme(topText: text.top, bottomText: text.bottom, originalImage: image, memedImage: memedImage)
+        MemeStore.shared.save(meme: meme)
     }
     
     private func generateMemedImage() -> UIImage {
