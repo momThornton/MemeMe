@@ -53,11 +53,14 @@ class MemeStore {
     }
     
     private func notifyUpdated() {
-        observers.forEach { $0.didUpdate(store: self) }
+        observers.forEach { $0.didUpdate(memeStore: self) }
     }
     
 }
 
 protocol MemeStoreObserver: AnyObject {
-    func didUpdate(store: MemeStore)
+    func didUpdate(memeStore: MemeStore)
 }
+
+
+
