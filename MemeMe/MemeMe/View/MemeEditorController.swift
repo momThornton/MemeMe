@@ -8,9 +8,9 @@
 import UIKit
 import AVFoundation
 
-class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextFieldDelegate, UINavigationControllerDelegate {
+class MemeEditorController: UIViewController, UIImagePickerControllerDelegate, UITextFieldDelegate, UINavigationControllerDelegate {
 
-    @IBOutlet weak var selectImageView: UIImageView!
+    @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var cameraButton: UIBarButtonItem!
     @IBOutlet weak var topTextField: UITextField!
     @IBOutlet weak var bottomTextField: UITextField!
@@ -102,7 +102,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextF
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let image = info[.originalImage] as? UIImage {
-            selectImageView.image = image
+            imageView.image = image
         }
         dismiss(animated: true, completion: nil)
     }
@@ -171,7 +171,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextF
     
     private func save() {
         let memedImage = generateMemedImage()
-        _ = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: selectImageView.image!, memedImage: memedImage)
+        _ = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imageView.image!, memedImage: memedImage)
     }
     
     private func generateMemedImage() -> UIImage {
