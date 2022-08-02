@@ -36,6 +36,13 @@ class MemeTableViewController: UITableViewController, MemeStoreObserver {
         return cell
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let meme = memeStore.meme(at: indexPath.row),
+              let detailView = storyboard?.instantiateViewController(withIdentifier: MemeEditorController.storyboardID) as? MemeEditorController else { return }
+        detailView.meme = meme
+        navigationController?.pushViewController(detailView, animated: true)
+    }
+    
     // MARK: MemeStoreObserver
     
     func didUpdate(memeStore: MemeStore) {
@@ -78,6 +85,13 @@ class MemeCollectionViewController: UICollectionViewController, MemeStoreObserve
         }
         cell.memeImageView.image = meme.memedImage
         return cell
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let meme = memeStore.meme(at: indexPath.row),
+              let detailView = storyboard?.instantiateViewController(withIdentifier: MemeEditorController.storyboardID) as? MemeEditorController else { return }
+        detailView.meme = meme
+        navigationController?.pushViewController(detailView, animated: true)
     }
     
     private func configure(flowLayout: UICollectionViewFlowLayout) {

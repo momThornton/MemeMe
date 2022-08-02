@@ -9,25 +9,47 @@ import UIKit
 import AVFoundation
 
 class MemeEditorController: UIViewController, UIImagePickerControllerDelegate, UITextFieldDelegate, UINavigationControllerDelegate {
-
+    static let storyboardID = "MemeEditorController"
+    
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var cameraButton: UIBarButtonItem!
     @IBOutlet weak var topTextField: UITextField!
     @IBOutlet weak var bottomTextField: UITextField!
     
-    private var isPortraitOrientation: Bool { UIDevice.current.orientation.isPortrait }
-    
+    var meme: Meme?
     private var text: (top: String, bottom: String) { (topTextField.text ?? .empty, bottomTextField.text ?? .empty) }
-    
     private let defaultText = (top: "TOP", bottom: "BOTTOM")
-    private var explicitlyWroteDefault = (top: false, bottom: false)
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.configure(topTextField, withLabel: defaultText.top)
-        self.configure(bottomTextField, withLabel: defaultText.bottom)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didClickActionButton))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didClickCancelButton))
+        
+        
+        if let meme = meme {
+            configureUneditable(existing: meme)
+        } else {
+            self.configure(topTextField, withLabel: defaultText.top)
+            self.configure(bottomTextField, withLabel: defaultText.bottom)
+            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didClickActionButton))
+            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didClickCancelButton))
+        }
+        
+    }
+    
+    private func configureUneditable(existing meme: Meme) {
+        if let imageView = self.imageView { imageView.image = meme.originalImage }
+        if let topTextField = self.topTextField { topTextField.text = meme.topText }
+        if let bottomTextField = self.bottomTextField { bottomTextField.text = meme.bottomText }
+        
+        [topTextField!, bottomTextField!].forEach {
+            $0.isUserInteractionEnabled = false
+            $0.defaultTextAttributes = [
+                .strokeColor: UIColor.black,
+                .foregroundColor: UIColor.white,
+                .font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
+                .strokeWidth: -1.0,
+            ]
+            $0.textAlignment = .center
+        }
         
     }
     
@@ -60,14 +82,17 @@ class MemeEditorController: UIViewController, UIImagePickerControllerDelegate, U
             }
         }
     }
+    
     @objc func didClickCancelButton() {
         self.dismiss(animated: true)
     }
+    
     @objc func didClickActionButton() {
-        let activityVC = UIActivityViewController(activityItems: [generateMemedImage()], applicationActivities: nil)
+        let image = generateMemedImage()
+        let activityVC = UIActivityViewController(activityItems: [image], applicationActivities: nil)
         activityVC.completionWithItemsHandler = { activity, didComplete, items, error in
             if didComplete {
-                self.save()
+                self.save(memeImage: image)
                 self.dismiss(animated: true)
             }
         }
@@ -120,21 +145,6 @@ class MemeEditorController: UIViewController, UIImagePickerControllerDelegate, U
     
     // MARK: - UITextFieldDelegate
     
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        if let text = textField.text, text.isEmpty {
-            let defaultText = (textField == topTextField) ? defaultText.top : defaultText.bottom
-            textField.text = defaultText
-            return
-        }
-        
-        if textField == topTextField {
-            explicitlyWroteDefault.top = textField.text == defaultText.top
-        } else {
-            explicitlyWroteDefault.bottom = textField.text == defaultText.bottom
-        }
-        
-    }
-    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
@@ -180,28 +190,14 @@ class MemeEditorController: UIViewController, UIImagePickerControllerDelegate, U
         self.navigationController?.toolbar.isHidden = isHidden
     }
     
-    private func hideDefaultText(hide isHidden: Bool) {
-        if isHidden {
-            if !explicitlyWroteDefault.top && text.top == defaultText.top { configure(topTextField, withLabel: .empty) }
-            if !explicitlyWroteDefault.bottom && text.bottom == defaultText.bottom { configure(bottomTextField, withLabel: .empty) }
-        } else {
-            if text.top.isEmpty { configure(topTextField, withLabel: defaultText.top) }
-            if text.bottom.isEmpty { configure(bottomTextField, withLabel: defaultText.bottom) }
-        }
-        
-    }
-    
-    private func save() {
+    private func save(memeImage: UIImage) {
         guard let image = imageView.image else { return }
-        let memedImage = generateMemedImage()
-        let text = (top: topTextField.text ?? .empty, bottom: bottomTextField.text ?? .empty)
-        let meme = Meme(topText: text.top, bottomText: text.bottom, originalImage: image, memedImage: memedImage)
+        let meme = Meme(topText: text.top, bottomText: text.bottom, originalImage: image, memedImage: memeImage)
         MemeStore.shared.save(meme: meme)
     }
     
     private func generateMemedImage() -> UIImage {
         self.hideNavigationBar(hide: true)
-        self.hideDefaultText(hide: true)
         
         UIGraphicsBeginImageContext(self.view.frame.size)
         view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
@@ -209,7 +205,6 @@ class MemeEditorController: UIViewController, UIImagePickerControllerDelegate, U
         UIGraphicsEndImageContext()
 
         self.hideNavigationBar(hide: false)
-        self.hideDefaultText(hide: false)
         return memedImage
     }
     

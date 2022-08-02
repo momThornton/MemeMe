@@ -65,9 +65,9 @@
 			isa = PBXGroup;
 			children = (
 				3C8C2A1627C19FC500E77713 /* Main.storyboard */,
-				3C8C2A1427C19FC500E77713 /* MemeEditorController.swift */,
-				3C22C3CA2897E3470013412E /* MemeCellView.swift */,
 				3C22C3CC2897E51F0013412E /* MemeTableViewController.swift */,
+				3C22C3CA2897E3470013412E /* MemeCellView.swift */,
+				3C8C2A1427C19FC500E77713 /* MemeEditorController.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
