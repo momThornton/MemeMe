@@ -27,6 +27,7 @@ class MemeEditorController: UIViewController, UIImagePickerControllerDelegate, U
         self.configure(topTextField, withLabel: defaultText.top)
         self.configure(bottomTextField, withLabel: defaultText.bottom)
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didClickActionButton))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didClickCancelButton))
         
     }
     
@@ -59,7 +60,9 @@ class MemeEditorController: UIViewController, UIImagePickerControllerDelegate, U
             }
         }
     }
-    
+    @objc func didClickCancelButton() {
+        self.dismiss(animated: true)
+    }
     @objc func didClickActionButton() {
         let activityVC = UIActivityViewController(activityItems: [generateMemedImage()], applicationActivities: nil)
         activityVC.completionWithItemsHandler = { activity, didComplete, items, error in
@@ -198,6 +201,7 @@ class MemeEditorController: UIViewController, UIImagePickerControllerDelegate, U
     
     private func generateMemedImage() -> UIImage {
         self.hideNavigationBar(hide: true)
+        self.hideDefaultText(hide: true)
         
         UIGraphicsBeginImageContext(self.view.frame.size)
         view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
