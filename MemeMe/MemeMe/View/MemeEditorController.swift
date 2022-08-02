@@ -8,20 +8,49 @@
 import UIKit
 import AVFoundation
 
-class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextFieldDelegate, UINavigationControllerDelegate {
-
-    @IBOutlet weak var selectImageView: UIImageView!
+class MemeEditorController: UIViewController, UIImagePickerControllerDelegate, UITextFieldDelegate, UINavigationControllerDelegate {
+    static let storyboardID = "MemeEditorController"
+    
+    @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var cameraButton: UIBarButtonItem!
     @IBOutlet weak var topTextField: UITextField!
     @IBOutlet weak var bottomTextField: UITextField!
     
-    private var isEditingBottomTextField = false
+    var meme: Meme?
+    private var text: (top: String, bottom: String) { (topTextField.text ?? .empty, bottomTextField.text ?? .empty) }
+    private let defaultText = (top: "TOP", bottom: "BOTTOM")
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.configure(topTextField, withLabel: "TOP")
-        self.configure(bottomTextField, withLabel: "BOTTOM")
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didClickActionButton))
+        
+        
+        if let meme = meme {
+            configureUneditable(existing: meme)
+        } else {
+            self.configure(topTextField, withLabel: defaultText.top)
+            self.configure(bottomTextField, withLabel: defaultText.bottom)
+            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didClickActionButton))
+            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didClickCancelButton))
+        }
+        
+    }
+    
+    private func configureUneditable(existing meme: Meme) {
+        if let imageView = self.imageView { imageView.image = meme.originalImage }
+        if let topTextField = self.topTextField { topTextField.text = meme.topText }
+        if let bottomTextField = self.bottomTextField { bottomTextField.text = meme.bottomText }
+        
+        [topTextField!, bottomTextField!].forEach {
+            $0.isUserInteractionEnabled = false
+            $0.defaultTextAttributes = [
+                .strokeColor: UIColor.black,
+                .foregroundColor: UIColor.white,
+                .font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
+                .strokeWidth: -1.0,
+            ]
+            $0.textAlignment = .center
+        }
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -40,7 +69,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextF
     
     @IBAction func selectImageFromAlbum(_ sender: Any) {
         self.chooseImageFromCameraOrPhoto(source: .photoLibrary)
-        
     }
     
     @IBAction func selectImageFromCamera(_ sender: Any) {
@@ -55,11 +83,16 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextF
         }
     }
     
+    @objc func didClickCancelButton() {
+        self.dismiss(animated: true)
+    }
+    
     @objc func didClickActionButton() {
-        let activityVC = UIActivityViewController(activityItems: [generateMemedImage()], applicationActivities: nil)
+        let image = generateMemedImage()
+        let activityVC = UIActivityViewController(activityItems: [image], applicationActivities: nil)
         activityVC.completionWithItemsHandler = { activity, didComplete, items, error in
             if didComplete {
-                self.save()
+                self.save(memeImage: image)
                 self.dismiss(animated: true)
             }
         }
@@ -79,20 +112,18 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextF
     }
 
     @objc func keyboardWillShow(_ notification:Notification) {
-        if isEditingBottomTextField {
+        if bottomTextField.isEditing {
             view.frame.origin.y -= getKeyboardHeight(notification)
         }
-        
     }
     
     @objc func keyboardWillHide(_ notification:Notification) {
-        if isEditingBottomTextField {
+        if bottomTextField.isEditing {
             view.frame.origin.y = 0
         }
     }
     
     func getKeyboardHeight(_ notification:Notification) -> CGFloat {
-
         let userInfo = notification.userInfo
         let keyboardSize = userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! NSValue // of CGRect
         return keyboardSize.cgRectValue.height
@@ -102,7 +133,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextF
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let image = info[.originalImage] as? UIImage {
-            selectImageView.image = image
+            imageView.image = image
         }
         dismiss(animated: true, completion: nil)
     }
@@ -113,16 +144,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextF
     }
     
     // MARK: - UITextFieldDelegate
-    
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        self.isEditingBottomTextField = textField == self.bottomTextField
-    }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        if textField == self.bottomTextField {
-            self.isEditingBottomTextField = false
-        }
-    }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
@@ -152,14 +173,14 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextF
     }
     
     private func configure(_ tf: UITextField, withLabel text: String) {
+        tf.text = text
         tf.defaultTextAttributes = [
-            .foregroundColor: UIColor.white,
             .strokeColor: UIColor.black,
+            .foregroundColor: UIColor.white,
             .font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
-            .strokeWidth: -4.0,
+            .strokeWidth: -1.0,
         ]
         tf.textAlignment = .center
-        tf.text = text
         tf.clearsOnBeginEditing = true
         tf.delegate = self
     }
@@ -169,9 +190,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextF
         self.navigationController?.toolbar.isHidden = isHidden
     }
     
-    private func save() {
-        let memedImage = generateMemedImage()
-        _ = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: selectImageView.image!, memedImage: memedImage)
+    private func save(memeImage: UIImage) {
+        guard let image = imageView.image else { return }
+        let meme = Meme(topText: text.top, bottomText: text.bottom, originalImage: image, memedImage: memeImage)
+        MemeStore.shared.save(meme: meme)
     }
     
     private func generateMemedImage() -> UIImage {
