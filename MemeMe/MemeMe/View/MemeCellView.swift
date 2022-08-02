@@ -10,15 +10,17 @@ import UIKit
 
 class MemeTableCellView: UITableViewCell, Identifiable {
     
-    static let id = "memeTableViewCell"
+    static let id = "MemeTableCellView"
     
     @IBOutlet weak var memeImageView: UIImageView!
     
 }
 
-class MemeCollectionViewCell: UICollectionViewCell, Identifiable {
+class MemeCollectionCellView: UICollectionViewCell, Identifiable {
     
-    static let id = "memeCollectionViewCell"
+    static let id = "MemeCollectionCellView"
+    
+    @IBOutlet weak var memeImageView: UIImageView!
     
     
 }

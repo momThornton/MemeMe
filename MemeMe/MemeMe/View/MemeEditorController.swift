@@ -15,13 +15,19 @@ class MemeEditorController: UIViewController, UIImagePickerControllerDelegate, U
     @IBOutlet weak var topTextField: UITextField!
     @IBOutlet weak var bottomTextField: UITextField!
     
-    private var isEditingBottomTextField = false
+    private var isPortraitOrientation: Bool { UIDevice.current.orientation.isPortrait }
+    
+    private var text: (top: String, bottom: String) { (topTextField.text ?? .empty, bottomTextField.text ?? .empty) }
+    
+    private let defaultText = (top: "TOP", bottom: "BOTTOM")
+    private var explicitlyWroteDefault = (top: false, bottom: false)
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.configure(topTextField, withLabel: "TOP")
-        self.configure(bottomTextField, withLabel: "BOTTOM")
+        self.configure(topTextField, withLabel: defaultText.top)
+        self.configure(bottomTextField, withLabel: defaultText.bottom)
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didClickActionButton))
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -40,7 +46,6 @@ class MemeEditorController: UIViewController, UIImagePickerControllerDelegate, U
     
     @IBAction func selectImageFromAlbum(_ sender: Any) {
         self.chooseImageFromCameraOrPhoto(source: .photoLibrary)
-        
     }
     
     @IBAction func selectImageFromCamera(_ sender: Any) {
@@ -79,20 +84,18 @@ class MemeEditorController: UIViewController, UIImagePickerControllerDelegate, U
     }
 
     @objc func keyboardWillShow(_ notification:Notification) {
-        if isEditingBottomTextField {
+        if bottomTextField.isEditing {
             view.frame.origin.y -= getKeyboardHeight(notification)
         }
-        
     }
     
     @objc func keyboardWillHide(_ notification:Notification) {
-        if isEditingBottomTextField {
+        if bottomTextField.isEditing {
             view.frame.origin.y = 0
         }
     }
     
     func getKeyboardHeight(_ notification:Notification) -> CGFloat {
-
         let userInfo = notification.userInfo
         let keyboardSize = userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! NSValue // of CGRect
         return keyboardSize.cgRectValue.height
@@ -114,14 +117,19 @@ class MemeEditorController: UIViewController, UIImagePickerControllerDelegate, U
     
     // MARK: - UITextFieldDelegate
     
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        self.isEditingBottomTextField = textField == self.bottomTextField
-    }
-    
     func textFieldDidEndEditing(_ textField: UITextField) {
-        if textField == self.bottomTextField {
-            self.isEditingBottomTextField = false
+        if let text = textField.text, text.isEmpty {
+            let defaultText = (textField == topTextField) ? defaultText.top : defaultText.bottom
+            textField.text = defaultText
+            return
         }
+        
+        if textField == topTextField {
+            explicitlyWroteDefault.top = textField.text == defaultText.top
+        } else {
+            explicitlyWroteDefault.bottom = textField.text == defaultText.bottom
+        }
+        
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -152,14 +160,14 @@ class MemeEditorController: UIViewController, UIImagePickerControllerDelegate, U
     }
     
     private func configure(_ tf: UITextField, withLabel text: String) {
+        tf.text = text
         tf.defaultTextAttributes = [
-            .foregroundColor: UIColor.white,
             .strokeColor: UIColor.black,
+            .foregroundColor: UIColor.white,
             .font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
-            .strokeWidth: -4.0,
+            .strokeWidth: -1.0,
         ]
         tf.textAlignment = .center
-        tf.text = text
         tf.clearsOnBeginEditing = true
         tf.delegate = self
     }
@@ -167,6 +175,17 @@ class MemeEditorController: UIViewController, UIImagePickerControllerDelegate, U
     private func hideNavigationBar(hide isHidden: Bool) {
         self.navigationController?.navigationBar.isHidden = isHidden
         self.navigationController?.toolbar.isHidden = isHidden
+    }
+    
+    private func hideDefaultText(hide isHidden: Bool) {
+        if isHidden {
+            if !explicitlyWroteDefault.top && text.top == defaultText.top { configure(topTextField, withLabel: .empty) }
+            if !explicitlyWroteDefault.bottom && text.bottom == defaultText.bottom { configure(bottomTextField, withLabel: .empty) }
+        } else {
+            if text.top.isEmpty { configure(topTextField, withLabel: defaultText.top) }
+            if text.bottom.isEmpty { configure(bottomTextField, withLabel: defaultText.bottom) }
+        }
+        
     }
     
     private func save() {
@@ -186,6 +205,7 @@ class MemeEditorController: UIViewController, UIImagePickerControllerDelegate, U
         UIGraphicsEndImageContext()
 
         self.hideNavigationBar(hide: false)
+        self.hideDefaultText(hide: false)
         return memedImage
     }
     
